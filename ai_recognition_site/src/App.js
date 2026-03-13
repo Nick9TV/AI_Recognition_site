@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import axios from "axios";
 
 function App() {
+  const [file, setFile] = useState(null);
+  const [result, setResult] = useState([]);
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await axios.post("http://localhost:8000/predict", formData);
+
+    setResult(res.data.objects);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{padding:40}}>
+      <h1>Image Recognition</h1>
+
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files[0])}
+      />
+
+      <button onClick={handleUpload}>
+        Upload
+      </button>
+
+      <h2>Detected objects:</h2>
+      <ul>
+        {result.map((r, i) => (
+          <li key={i}>{r}</li>
+        ))}
+      </ul>
     </div>
   );
 }
